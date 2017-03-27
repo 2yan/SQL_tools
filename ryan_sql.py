@@ -6,6 +6,28 @@ username = None
 password = None
 database_ip = None
 
+
+def complete_table_name(phrase):
+    search_phrase = '[' + phrase + ']'
+    try:
+        cur = connect()
+        x = cur.execute('SELECT * FROM ' + search_phrase)
+        cur.close()
+        return phrase
+    except Exception as e:
+        s = str(e)
+    if phrase in s and 'Invalid object name' in s:
+        possible = search_database(phrase)
+        if len(possible)== 1:
+            return possible[0]
+                
+    raise KeyError('NO Single Match found for name. POssible Names =' +' , '.join(possible))
+
+
+
+
+        
+
 def get_config():
     config = pd.read_csv('Config.csv', index_col = 'keys' )
     server = config.loc['server', 'values']
@@ -14,22 +36,31 @@ def get_config():
 server, database = get_config()
 
 
-def check_categorical(table, data = False):
-    x = data
-    try:
-        if data == False:
-            print('Obtaining Data')
-            x = get_data(table)
-    except ValueError:
-        pass
+def get_columns(table):
+    table = complete_table_name(table)
+    cur = connect()
+    cur.execute('select * from ' + table)
+    columns = []
+    for item in cur.description:
+        columns.append(item[0])
+    return columns
 
-    
-    for columns in x.columns:
-        length = len(x.groupby(columns))
-        if  length < 30 and length > 0 :
-            print(columns)
-            print(x[columns].value_counts())
-            sea.countplot(x = columns, data = x )
+
+
+def check_categorical(table, in_data = None, max_categories = 30):
+    data = in_data
+    table = complete_table_name(table)
+    columns = get_columns(table)
+    for column in columns:
+        if in_data == None:
+
+            data = get_data(table, columns =  [column])
+
+        length = len(data.groupby(column))
+        if  length <= max_categories and length > 0 :
+            print(column)
+            print(data[column].value_counts())
+            sea.countplot(x = column, data = data )
             sea.plt.show()
             print('_________________________________\n\n')
             
@@ -51,13 +82,32 @@ def get_dictonary( listo_items ):
         diction [ str(item[0]) ] = item[1]
         
     return diction
-
-def get_data(table, columns = '*', where = None ):
-    SELECT = 'SELECT ' + columns + ' From ' + table
-    sql = SELECT
+ 
+    
+def get_data(table, columns = ['*'], where = None , number = None ):
+    table = complete_table_name(table)
+    columns = ' , '.join(columns)
+    sql = 'SELECT ' + columns + ' From ' + table
+    
+        
     if where != None:
-        sql = SELECT + where
-    data = pd.read_sql(sql , con = get_connection())
+        sql = sql + ' WHERE ' + where
+
+    cur = connect()
+    try:
+        cur.execute(sql )
+    except pypyodbc.ProgrammingError as e:
+
+        print( 'SQL: ' + sql )
+        raise(e)
+        
+    columns = []
+    for item in cur.description:
+        columns.append(item[0])
+    if number != None:
+        data = pd.DataFrame( cur.fetchmany(number), columns = columns)
+    if number == None:
+        data = pd.DataFrame( cur.fetchall(), columns = columns)
     return data
 
 
@@ -74,11 +124,13 @@ def get_all_tables():
 
 
 def print_header(table_name):
-    
+    table_name = complete_table_name(table_name)
     cur = connect()
     cur.execute('select * from ' + table_name)
+    
     for item in cur.description:
         print(s_s(item[0], 50), item[1])
+        
     cur.connection.close()
 
 
@@ -106,12 +158,14 @@ def search_database(word):
     cur = connect()
     cur.execute('SELECT * FROM sys.Tables')
     names = []
+    results = []
     for items in cur:
         names.append(items)
     for name in names:
         if word.lower() in name[0].lower():
-            print(name)
-    cur.connection.close()        
+            results.append(name[0])
+    cur.connection.close()
+    return results
         
 def search_labels(word):
     cur = connect()
@@ -144,4 +198,6 @@ def print_data( table_name ,  column_name = '*', no = 50,):
         print(item)
     cur.connection.close()
 
-    
+server, database = get_config()
+cur =connect()
+con = get_connection()
