@@ -27,6 +27,10 @@ def get_schema():
     schema = pd.read_sql('SELECT * FROM INFORMATION_SCHEMA.COLUMNS', get_connection() )
     return schema
 
+def get_possible_table_joins( column_name ):
+    schema = get_schema()
+    results = schema[schema['column_name'].str.contains(column_name, case = False )]
+    return pd.DataFrame(results['table_name'].unique(), columns = ['table_name'])
 
 def find_column_that_contains(table_name, find_me):
     table_name = complete_table_name( table_name)
