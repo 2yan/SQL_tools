@@ -23,11 +23,29 @@ def complete_table_name(phrase):
                 
     raise KeyError('NO Single Match found for name. POssible Names =' +' , '.join(possible))
 
+def get_schema():
+    schema = pd.read_sql('SELECT * FROM INFORMATION_SCHEMA.COLUMNS', get_connection() )
+    return schema
 
 
+def find_column_that_contains(table_name, find_me):
+    table_name = complete_table_name( table_name)
+    columns = get_columns(table_name)
+    result = []
+    if type(find_me) == str:
+        find_me ='\'' + find_me + '\''
+    for column in columns:
+        where = table_name + '.' +  column + '=' + find_me 
 
-        
-
+        try:
+            data = get_data(table_name, [column], where= where  )
+            if len(data) > 0:
+                result.append(column)
+        except pypyodbc.ProgrammingError:
+            pass
+        except pypyodbc.DataError:
+            pass
+    return result
 def get_config():
     config = pd.read_csv('Config.csv', index_col = 'keys' )
     server = config.loc['server', 'values']
@@ -188,7 +206,8 @@ def search_labels(word):
                 print('Coluumn:     ' , key)
                 print('\n')
     cur.connection.close()
-            
+
+
         
 
 def print_data( table_name ,  column_name = '*', no = 50,):
