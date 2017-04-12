@@ -27,6 +27,9 @@ def get_schema():
     schema = pd.read_sql('SELECT * FROM INFORMATION_SCHEMA.COLUMNS', get_connection() )
     return schema
 
+
+
+
 def get_possible_table_joins( column_name ):
     schema = get_schema()
     results = schema[schema['column_name'].str.contains(column_name, case = False )]
@@ -189,29 +192,16 @@ def search_database(word):
     cur.connection.close()
     return results
         
-def search_labels(word):
-    cur = connect()
-    cur.execute('SELECT * FROM sys.Tables')
-    names = []
-    for items in cur:
-        names.append(items)
-    for name in names:
-        
-        try:
-            cur.execute('select * from ' +'['+ name[0] + ']')
-        except pypyodbc.ProgrammingError:
-            pass
-        keys = []
-        for item in cur.description:
-            keys.append([s_s(item[0], 50), item[1]])
-        for key in keys:
-            if word.lower() in key[0].lower():
-                print('Table:       ' , name)
-                print('Coluumn:     ' , key)
-                print('\n')
-    cur.connection.close()
-
-
+def search_labels(word, exact = False):
+    schema = get_schema()
+    data = schema[schema['column_name'].str.contains(word, case = False )]
+    if equals:
+        data = data[data['column_name'].str.lower() == word.lower() ] 
+    final = pd.DataFrame()
+    final['table_name'] = data['table_name']
+    final['column_name'] = data['column_name']
+    final['data_type'] = data['data_type']
+    return final
         
 
 def print_data( table_name ,  column_name = '*', no = 50,):
