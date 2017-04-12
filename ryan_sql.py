@@ -35,23 +35,36 @@ def get_possible_table_joins( column_name ):
     results = schema[schema['column_name'].str.contains(column_name, case = False )]
     return pd.DataFrame(results['table_name'].unique(), columns = ['table_name'])
 
-def find_column_that_contains(table_name, find_me):
+def find_column_that_contains(table_name, find_me, exact = True):
     table_name = complete_table_name( table_name)
     columns = get_columns(table_name)
     result = []
-    if type(find_me) == str:
-        find_me ='\'' + find_me + '\''
-    for column in columns:
-        where = table_name + '.' +  column + '=' + find_me 
+    if exact:
+        if type(find_me) == str:
+            find_me ='\'' + find_me + '\''
+        for column in columns:
+            where = table_name + '.' +  column + '=' + find_me 
 
-        try:
-            data = get_data(table_name, [column], where= where  )
-            if len(data) > 0:
-                result.append(column)
-        except pypyodbc.ProgrammingError:
-            pass
-        except pypyodbc.DataError:
-            pass
+            try:
+                sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where 
+                data = pd.read_sql( sql, get_connection() )
+                if len(data) > 0:
+                    result.append(column)
+            except pd.io.sql.DatabaseError:
+                pass
+    if not exact:
+        if type(find_me) == str:
+            find_me ='\'' + find_me + '\''
+        for column in columns:
+            where = table_name + '.' +  column + ' like ' + find_me 
+
+            try:
+                sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where 
+                data = pd.read_sql( sql, get_connection() )
+                if len(data) > 0:
+                    result.append(column)
+            except pd.io.sql.DatabaseError:
+                pass
     return result
 
 def get_config():
