@@ -53,12 +53,12 @@ def find_column_that_contains(table_name, find_me):
         except pypyodbc.DataError:
             pass
     return result
+
 def get_config():
     config = pd.read_csv('Config.csv', index_col = 'keys' )
     server = config.loc['server', 'values']
     database = config.loc['database', 'values']
     return server, database 
-server, database = get_config()
 
 
 def get_columns(table):
@@ -195,7 +195,7 @@ def search_database(word):
 def search_labels(word, exact = False):
     schema = get_schema()
     data = schema[schema['column_name'].str.contains(word, case = False )]
-    if equals:
+    if exact:
         data = data[data['column_name'].str.lower() == word.lower() ] 
     final = pd.DataFrame()
     final['table_name'] = data['table_name']
@@ -212,5 +212,5 @@ def print_data( table_name ,  column_name = '*', no = 50,):
     cur.connection.close()
 
 server, database = get_config()
-cur =connect()
+cur = connect()
 con = get_connection()
