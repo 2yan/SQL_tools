@@ -120,13 +120,9 @@ def get_dictonary( listo_items ):
         diction [ str(item[0]) ] = item[1]
         
     return diction
- 
-    
-def get_data(table, columns = ['*'], where = {} , number = None ):
-    table = complete_table_name(table)
-    columns = ' , '.join(columns)
-    SQL = 'SELECT ' + columns + ' FROM ' + table
-    
+
+def gen_where(where = {}):
+    SQL = ''
     if where != {}:
         for key in where.keys():
             if 'WHERE' not in SQL:
@@ -135,8 +131,13 @@ def get_data(table, columns = ['*'], where = {} , number = None ):
             else:
                 WHERE = ' AND ' + key + ' = ' + '\'' + where[key] + '\''
                 SQL = SQL + WHERE
-
-                
+    return SQL 
+    
+def get_data(table, columns = ['*'], where = {} , number = None ):
+    table = complete_table_name(table)
+    columns = ' , '.join(columns)
+    SQL = 'SELECT ' + columns + ' FROM ' + table + gen_where(where)
+                    
     cur = connect()
     try:
         cur.execute(SQL )
