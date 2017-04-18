@@ -122,21 +122,27 @@ def get_dictonary( listo_items ):
     return diction
  
     
-def get_data(table, columns = ['*'], where = None , number = None ):
+def get_data(table, columns = ['*'], where = {} , number = None ):
     table = complete_table_name(table)
     columns = ' , '.join(columns)
-    sql = 'SELECT ' + columns + ' From ' + table
+    SQL = 'SELECT ' + columns + ' FROM ' + table
     
-        
-    if where != None:
-        sql = sql + ' WHERE ' + where
+    if where != {}:
+        for key in where.keys():
+            if 'WHERE' not in SQL:
+                WHERE = ' WHERE ' + key + ' = ' + '\'' + where[key] + '\''
+                SQL = SQL + WHERE
+            else:
+                WHERE = ' AND ' + key + ' = ' + '\'' + where[key] + '\''
+                SQL = SQL + WHERE
 
+                
     cur = connect()
     try:
-        cur.execute(sql )
+        cur.execute(SQL )
     except pypyodbc.ProgrammingError as e:
 
-        print( 'SQL: ' + sql )
+        print( 'SQL: ' + SQL )
         raise(e)
         
     columns = []
