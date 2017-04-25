@@ -6,6 +6,7 @@ username = None
 password = None
 database_ip = None
 
+server,database = get_config()
 
 
 def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
