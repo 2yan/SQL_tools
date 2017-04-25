@@ -7,6 +7,20 @@ password = None
 database_ip = None
 
 
+
+def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
+    SQL = ''
+
+    if column_dict != None:
+        SQL = SQL + ' SELECT '
+        cols = [] 
+        for key in column_dict.keys(): 
+            for column in column_dict[key]:
+                cols.append(key+ '.' + column)
+        SQL = SQL +' '+  ','.join( cols)
+        
+    
+    return SQL
 def complete_table_name(phrase):
     search_phrase = '[' + phrase + ']'
     try:
@@ -121,8 +135,11 @@ def get_dictonary( listo_items ):
         
     return diction
 
-def gen_where(where = {}):
+def gen_where(where ):
     SQL = ''
+    if type(where) == str:
+        return where
+    
     if where != {}:
         for key in where.keys():
             if 'WHERE' not in SQL:
@@ -133,7 +150,7 @@ def gen_where(where = {}):
                 SQL = SQL + WHERE
     return SQL 
     
-def get_data(table, columns = ['*'], where = {} , number = None ):
+def get_data(table, columns = ['*'], where = '' , number = None ):
     table = complete_table_name(table)
     columns = ' , '.join(columns)
     SQL = 'SELECT ' + columns + ' FROM ' + table + gen_where(where)
@@ -231,6 +248,4 @@ def print_data( table_name ,  column_name = '*', no = 50,):
         print(item)
     cur.connection.close()
 
-server, database = get_config()
-cur = connect()
-con = get_connection()
+
