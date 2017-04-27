@@ -82,8 +82,7 @@ def find_column_that_contains(table_name, find_me, exact = True):
         if type(find_me) == str:
             find_me ='\'' + find_me + '\''
         for column in columns:
-            where = table_name + '.' +  column + ' like ' + find_me 
-
+            where = 'lower(' + table_name + '.' +  column +') ' +  ' like ' + find_me
             try:
                 sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where 
                 data = pd.read_sql( sql, get_connection() )
