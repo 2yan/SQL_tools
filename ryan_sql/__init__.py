@@ -62,6 +62,7 @@ def get_possible_table_joins( column_name ):
     return pd.DataFrame(results['table_name'].unique(), columns = ['table_name'])
 
 def find_column_that_contains(table_name, find_me, exact = True):
+    cur = connect()
     table_name = complete_table_name( table_name)
     columns = get_columns(table_name)
     result = []
@@ -84,9 +85,10 @@ def find_column_that_contains(table_name, find_me, exact = True):
         for column in columns:
             where = 'lower(' + table_name + '.' +  column +') ' +  ' like ' + find_me
             try:
-                sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where 
-                data = pd.read_sql( sql, get_connection() )
-                if len(data) > 0:
+                sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where
+                cur.execute(sql)
+                data = cur.fetchone()
+                if data != None:
                     result.append(column)
             except pd.io.sql.DatabaseError:
                 pass
