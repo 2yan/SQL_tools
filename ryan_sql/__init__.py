@@ -1,14 +1,25 @@
 import pypyodbc
 from datetime import datetime, timedelta
 import pandas as pd
-from ryan_tools import * 
+from ryan_tools import *
+
 username = None
 password = None
 database_ip = None
 
-server,database = get_config()
+#These Values have to be set. 
+server = None
+database = None
 
 
+def load_config(file_name):
+    config = pd.read_csv('Config.csv', index_col = 'keys' )
+    global server
+    global database
+    server = config.loc['server', 'values']
+    database = config.loc['database', 'values']
+    
+    
 def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
     SQL = ''
 
@@ -81,12 +92,6 @@ def find_column_that_contains(table_name, find_me, exact = True):
             except pd.io.sql.DatabaseError:
                 pass
     return result
-
-def get_config():
-    config = pd.read_csv('Config.csv', index_col = 'keys' )
-    server = config.loc['server', 'values']
-    database = config.loc['database', 'values']
-    return server, database 
 
 
 def get_columns(table):
@@ -248,5 +253,6 @@ def print_data( table_name ,  column_name = '*', no = 50,):
     for item in cur.fetchmany(no):
         print(item)
     cur.connection.close()
+    
 
 
