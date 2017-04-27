@@ -13,7 +13,7 @@ database = None
 
 
 def load_config(file_name):
-    config = pd.read_csv('Config.csv', index_col = 'keys' )
+    config = pd.read_csv(file_name, index_col = 'keys' )
     global server
     global database
     server = config.loc['server', 'values']
