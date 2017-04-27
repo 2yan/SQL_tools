@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='ryan_sql',
-      version='0.22',
+      version='0.23',
       description='SQL Tools to make reading SQL a littler easier',
       url='https://github.com/2yan/ryan_sql',
       author='Ryan Francis',

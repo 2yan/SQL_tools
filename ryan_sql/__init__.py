@@ -90,7 +90,7 @@ def find_column_that_contains(table_name, find_me, exact = True):
                 data = cur.fetchone()
                 if data != None:
                     result.append(column)
-            except pd.io.sql.DatabaseError:
+            except:
                 pass
     return result
 
