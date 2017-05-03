@@ -12,13 +12,17 @@ server = None
 database = None
 
 
-def load_config(file_name):
-    config = pd.read_csv(file_name, index_col = 'keys' )
+def load_config(file_name = None, server_ = None, database_ = None):
     global server
     global database
-    server = config.loc['server', 'values']
-    database = config.loc['database', 'values']
-    
+    if file_name != False:
+        config = pd.read_csv(file_name, index_col = 'keys' )
+        server = config.loc['server', 'values']
+        database = config.loc['database', 'values']
+        return
+    if (server_ != None) and (database_ != None):
+        server = server_
+        database = database_
     
 def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
     SQL = ''
