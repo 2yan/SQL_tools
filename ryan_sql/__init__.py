@@ -9,13 +9,22 @@ database_ip = None
 #These Values have to be set. 
 __server = None
 __database = None
+__con = None
 
+def set_connection(con):
+    global __con
+    __con = con
+    
 def get_connection():
-    con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
-    return con
+    global __con
+    if __con == None:
+        __con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
+        return __con
+    return __con
 
 def connect():
-    con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
+    global __con
+    con = get_connection()
     return con.cursor()
 
 
