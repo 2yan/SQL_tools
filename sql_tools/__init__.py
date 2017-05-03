@@ -1,5 +1,6 @@
 import pypyodbc
 from datetime import datetime, timedelta
+from ryan_tools import * 
 import pandas as pd
 
 username = None
