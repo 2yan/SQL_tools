@@ -8,21 +8,29 @@ password = None
 database_ip = None
 
 #These Values have to be set. 
-server = None
-database = None
+__server = None
+__database = None
+
+def get_connection():
+    con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
+    return con
+
+def connect():
+    con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
+    return con.cursor()
 
 
-def load_config(file_name = None, server_ = None, database_ = None):
-    global server
-    global database
+def load_config(file_name = None, server = None, database = None):
+    global __server
+    global __database
     if file_name != None:
         config = pd.read_csv(file_name, index_col = 'keys' )
-        server = config.loc['server', 'values']
-        database = config.loc['database', 'values']
+        __server = config.loc['server', 'values']
+        __database = config.loc['database', 'values']
         return
-    if (server_ != None) and (database_ != None):
-        server = server_
-        database = database_
+    if (server != None) and (database != None):
+        __server = server
+        __database = database
     
 def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
     SQL = ''
@@ -109,7 +117,6 @@ def get_columns(table):
     return columns
 
 
-
 def check_categorical(table, in_data = None, max_categories = 30):
     data = in_data
     table = complete_table_name(table)
@@ -127,17 +134,6 @@ def check_categorical(table, in_data = None, max_categories = 30):
             sea.plt.show()
             print('_________________________________\n\n')
             
-    
-def get_connection():
-    con = pypyodbc.connect(driver = 'SQL Server',server = server , database = database)
-    return con
-
-def connect():
-    con = pypyodbc.connect(driver = 'SQL Server',server = server , database = database)
-    return con.cursor()
-
-
-
 def get_dictonary( listo_items ):
 
     diction = {}
