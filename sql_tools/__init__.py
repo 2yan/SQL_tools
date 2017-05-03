@@ -6,24 +6,19 @@ username = None
 password = None
 database_ip = None
 
-#These Values have to be set. 
+#These Values have to be set.
+
 __server = None
 __database = None
-__con = None
 
-def set_connection(con):
-    global __con
-    __con = con
+
+
     
 def get_connection():
-    global __con
-    if __con == None:
-        __con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
-        return __con
-    return __con
+    con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
+    return con
 
 def connect():
-    global __con
     con = get_connection()
     return con.cursor()
 
@@ -62,14 +57,17 @@ def complete_table_name(phrase):
         return phrase
     except Exception as e:
         s = str(e)
+    possible = []
     if phrase in s and 'Invalid object name' in s:
         possible = search_database(phrase)
         if len(possible)== 1:
             return possible[0]
-                
-    raise KeyError('NO Single Match found for name. POssible Names =' +' , '.join(possible))
+    if len(possible) > 1:            
+        raise Warning('NO Single Match found for name. POssible Names =' +' , '.join(possible))
+    return phrase
 
 def get_schema():
+    # returns the schema of the databse
     schema = pd.read_sql('SELECT * FROM INFORMATION_SCHEMA.COLUMNS', get_connection() )
     return schema
 
@@ -77,11 +75,13 @@ def get_schema():
 
 
 def get_possible_table_joins( column_name ):
+    # prints all overlapping column name in the two tables
     schema = get_schema()
     results = schema[schema['column_name'].str.contains(column_name, case = False )]
     return pd.DataFrame(results['table_name'].unique(), columns = ['table_name'])
 
 def find_column_that_contains(table_name, find_me, exact = True):
+    #searches for a column that contains a keyword or string. Warning: you need to add the % flags yourself. 
     cur = connect()
     table_name = complete_table_name( table_name)
     columns = get_columns(table_name)
@@ -101,7 +101,7 @@ def find_column_that_contains(table_name, find_me, exact = True):
                 pass
     if not exact:
         if type(find_me) == str:
-            find_me ='\'' + find_me + '\''
+            find_me ='\'' + find_me.lower() + '\''
         for column in columns:
             where = 'lower(' + table_name + '.' +  column +') ' +  ' like ' + find_me
             try:
@@ -116,6 +116,7 @@ def find_column_that_contains(table_name, find_me, exact = True):
 
 
 def get_columns(table):
+    #Returns the columns within a table
     table = complete_table_name(table)
     cur = connect()
     cur.execute('select * from ' + table)
@@ -126,6 +127,7 @@ def get_columns(table):
 
 
 def check_categorical(table, in_data = None, max_categories = 30):
+    #This needs seaborn installed to work
     data = in_data
     table = complete_table_name(table)
     columns = get_columns(table)
