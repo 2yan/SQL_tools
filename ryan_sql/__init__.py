@@ -1,7 +1,6 @@
 import pypyodbc
 from datetime import datetime, timedelta
 import pandas as pd
-from ryan_tools import *
 
 username = None
 password = None
