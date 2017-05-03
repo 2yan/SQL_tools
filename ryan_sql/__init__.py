@@ -15,7 +15,7 @@ database = None
 def load_config(file_name = None, server_ = None, database_ = None):
     global server
     global database
-    if file_name != False:
+    if file_name != None:
         config = pd.read_csv(file_name, index_col = 'keys' )
         server = config.loc['server', 'values']
         database = config.loc['database', 'values']
