@@ -16,6 +16,8 @@ __database = None
 
     
 def get_connection():
+    if __server == None or __database == None:
+        raise Exception(' PLEASE SET SERVER AND DATABSE VALUES FIRST USING LOAD_CONFIG' )
     con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
     return con
 
@@ -24,7 +26,8 @@ def connect():
     return con.cursor()
 
 
-def load_config(file_name = None, server = None, database = None):
+def load_config( server = None, database = None, file_name = None):
+    #Filename is will be depreciated at some point soon. Just use errver and database. 
     global __server
     global __database
     if file_name != None:
