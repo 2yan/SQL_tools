@@ -193,22 +193,21 @@ def get_data(table, columns = ['*'], where = '' , number = None ):
         data = pd.DataFrame( cur.fetchall(), columns = columns)
     return data
 
-def temp_list_str(name, column, item_list):
-    #creates a temporary list command to be joined with other commands
-    if name.startswith('#') == False:
-        name = '#' + name
+def temp_list_str(name, item_list, cast_item = str):
+    #Creates a temporary list command to be joined with other commands
+    #[Confirmed working Mircosoft SQL Server 2008 + and postgresql 9.5.2+]
+    # If it works on your platform, reach out to me and I will add it to these notes. 2yan@outlook.com
+    first_command = '(values '
 
     for num in range(0, len(item_list) ):
         item = item_list[num]
+        item = cast_item(item)
         if type(item) == str:
             item = '\'' + item +  '\''
-        item_list[num] = ' select ' + str(item) + ' as ' + column
+        item_list[num] = '(' + str(item) + ')'
 
-
-    first_command = str(item_list[0]) +' into ' + name
-    item_list_2 = item_list[1:len(item_list)]
-    other_commands = ' union '.join(item_list_2)
-    return first_command + ' union ' + other_commands
+    other_commands = ','.join(item_list)
+    return first_command + other_commands + ') v(' + name + ')'
     
 
 def get_all_tables():
