@@ -194,22 +194,21 @@ def get_data(table, columns = ['*'], where = '' , number = None ):
     return data
 
 def create_list_command(name, column, item_list):
-	#creates a temporary list command to be joined with other commands
-	if name.startswith('#') == False:
-		name = '#' + name
+    #creates a temporary list command to be joined with other commands
+    if name.startswith('#') == False:
+        name = '#' + name
 
-	for num in range(0, len(item_list) ):
-		item = item_list[num]
-		if type(item) == str:
-			item = '\'' + item '\''
-		item_list[num] = ' select ' + str(item_list[num]) + ' as ' + column
+    for num in range(0, len(item_list) ):
+        item = item_list[num]
+        if type(item) == str:
+            item = '\'' + item +  '\''
+        item_list[num] = ' select ' + str(item_list[num]) + ' as ' + column
 
-	for thing in item_list:
-		print(thing)
-	first_command = str(item_list[0]) +' into ' + name
-	item_list_2 = item_list[1:len(item_list)]
-	other_commands = ' union '.join(item_list_2)
-	return first_command + ' union ' + other_commands
+
+    first_command = str(item_list[0]) +' into ' + name
+    item_list_2 = item_list[1:len(item_list)]
+    other_commands = ' union '.join(item_list_2)
+    return first_command + ' union ' + other_commands
     
 
 def get_all_tables():
