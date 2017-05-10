@@ -193,7 +193,7 @@ def get_data(table, columns = ['*'], where = '' , number = None ):
         data = pd.DataFrame( cur.fetchall(), columns = columns)
     return data
 
-def create_list_command(name, column, item_list):
+def temp_list_str(name, column, item_list):
     #creates a temporary list command to be joined with other commands
     if name.startswith('#') == False:
         name = '#' + name
@@ -202,7 +202,7 @@ def create_list_command(name, column, item_list):
         item = item_list[num]
         if type(item) == str:
             item = '\'' + item +  '\''
-        item_list[num] = ' select ' + str(item_list[num]) + ' as ' + column
+        item_list[num] = ' select ' + str(item) + ' as ' + column
 
 
     first_command = str(item_list[0]) +' into ' + name
