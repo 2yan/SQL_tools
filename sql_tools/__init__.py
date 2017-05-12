@@ -59,19 +59,19 @@ def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
     return SQL
 def complete_table_name(phrase):
     'Allows for incomplete table names to be typed in other parts of the code IF they are unique'
-    search_phrase = '[' + phrase + ']'
+    search_phrase = '[' + phrase.lower() + ']'
     try:
         cur = connect()
         x = cur.execute('SELECT * FROM ' + search_phrase)
         cur.close()
-        return phrase
+        return search_phrase
     except Exception as e:
         s = str(e)
     possible = []
     if phrase in s and 'Invalid object name' in s:
         possible = search_database(phrase)
         if len(possible)== 1:
-            return possible[0]
+            return '[' + possible[0] + ']'
     if len(possible) > 1:            
         raise Warning('NO Single Match found for name. POssible Names =' +' , '.join(possible))
     return search_phrase
@@ -82,17 +82,12 @@ def get_schema():
     return schema
 
 
-def id_match(table_a, table_b, __second = None ):
-    results = []
-    if __second == None:
-        x = id_match( table_b, table_a, 'Second' )
-        if len(x) != 0:
-            results.append(x)
-    if 'id' in get_columns(table_a):
-        for column in get_columns(table_b):
-            if column.lower() == table_a.lower() + 'id':
-                results.append({table_a+'.id': table_b + '.' + column})
-
+def id_match(table_a, table_b = None):
+    schema = get_schema()
+    results = schema[schema['column_name'].str.contains(table_a + 'id' , case = False)][['table_name', 'column_name']]
+    results['name'] = results['table_name'] + '.' + results['column_name']
+    if table_b != None:
+        results = results[results['table_name'].str.lower() == table_b.lower()]
     return results
 
 def get_possible_table_joins( column_name ):
@@ -232,14 +227,7 @@ def temp_list_str(name, item_list, cast_item = str):
 
 def get_all_tables():
     'returns a list of every table in the database'
-    cur = connect()
-    cur.execute('SELECT * FROM sys.Tables')
-    x = pd.DataFrame()
-    i = 0
-    for items in cur:
-        x.loc[i, 'name'] = items[0]
-        i = i + 1
-    cur.connection.close()
+    x = get_schema()['table_name'].unique()
     return x
 
 
