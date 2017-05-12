@@ -82,7 +82,18 @@ def get_schema():
     return schema
 
 
+def id_match(table_a, table_b, __second = None ):
+    results = []
+    if __second == None:
+        x = id_match( table_b, table_a, 'Second' )
+        if len(x) != 0:
+            results.append(x)
+    if 'id' in get_columns(table_a):
+        for column in get_columns(table_b):
+            if column.lower() == table_a.lower() + 'id':
+                results.append({table_a+'.id': table_b + '.' + column})
 
+    return results
 
 def get_possible_table_joins( column_name ):
     ' prints all overlapping column name in the two tables'
@@ -132,7 +143,7 @@ def get_columns(table):
     cur.execute('select * from ' + table)
     columns = []
     for item in cur.description:
-        columns.append(item[0])
+        columns.append(item[0].lower())
     return columns
 
 
@@ -260,7 +271,7 @@ def print_overlapping(table_1, table_2):
         for item2 in two:
             if item[0] == item2[0]:
                 print( item )
-
+    
     cur.connection.close()
 
     
