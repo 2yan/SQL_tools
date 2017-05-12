@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='sql_tools',
-      version='0.89',
+      version='0.895',
       description='SQL Tools - For Data Analysts!',
       url='https://github.com/2yan/ryan_sql',
       author='Ryan Francis',
