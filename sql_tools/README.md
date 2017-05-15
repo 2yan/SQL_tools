@@ -25,7 +25,7 @@ once that's done, you're ready to go.
 Note: Currently sql_tools designed to import pypyodbc but DOES NOT need to do it if you're using some other connection driver, so either edit it out or install it to avoid the onload crash. 
 
 
-# HOW DOES THIS WORK?
+## HOW DOES THIS WORK?
 
 Basically you have some sort of library that handles connecting to the <whatever_flavor> SQL database, this set of tools requires you to already have that connecting with python to the datbase bit figured out, all you need to do is provide a connection to the database and ensure the Schema pulling works. The get_schema() function might have to be overwritten.
 
