@@ -3,7 +3,7 @@ Useful tools for analysing a SQL database
 
 
 
-##Simple How to :
+## Simple How to :
 
 Install ryan_tools.  ( `pip install https://github.com/2yan/ryan_tools` )
 
@@ -13,6 +13,7 @@ you need to write up some sort of connection function:
 
 
 `def connect_func():
+
 	return sql_driver.connect('user', pass', 'database', 'table')`
 
 then pass that function to ryan_sql with 
@@ -26,7 +27,7 @@ Note: Currently sql_tools designed to import pypyodbc but DOES NOT need to do it
 
 # HOW DOES THIS WORK?
 
-Basically you have some sort of library that handles connecting to the <whatever_flavor> SQL database, this set of tools requires you to already have that connecting with python to the datbase bit figured out, all you need to do is provide a connection to the database and ensure the Schema pulling works. get_schema() function might have to be overwritten.
+Basically you have some sort of library that handles connecting to the <whatever_flavor> SQL database, this set of tools requires you to already have that connecting with python to the datbase bit figured out, all you need to do is provide a connection to the database and ensure the Schema pulling works. The get_schema() function might have to be overwritten.
 
 
 the get_schema() function has to return a dataframe with two columns: table_name, and column_name
@@ -54,8 +55,8 @@ find_column_that_contains(table_name, word_to_find)
 
 and more!
 
-- More complete examples with descriptions coming in at some point, for now you can explore the library by calling help( sql_tools )
-and help( sql_tools.function ) where function is the function name you want help for, the majority of them have explanations. 
+More complete examples with descriptions coming in at some point, for now you can explore the library by calling help( sql_tools )
+and help( sql_tools.function ) where function is the function name you want help for; the majority of them have explanations. 
 
 Final Note:
 you probably want to ensure you have some understanding of pandas dataframes as this library relies heavily on them. 
