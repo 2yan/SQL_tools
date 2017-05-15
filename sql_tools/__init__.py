@@ -30,18 +30,14 @@ def connect():
     return con.cursor()
 
 
-def load_config( server = None, database = None, file_name = None):
+def load_config( server = None, database = None):
     'Filename will be depreciated at some point soon. Just use server and database. '
     global __server
     global __database
-    if file_name != None:
-        config = pd.read_csv(file_name, index_col = 'keys' )
-        __server = config.loc['server', 'values']
-        __database = config.loc['database', 'values']
-        return
     if (server != None) and (database != None):
         __server = server
         __database = database
+    get_schema()
     
 def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
     'This is a work in progress'
@@ -82,12 +78,18 @@ def get_schema():
     return schema
 
 
-def id_match(table_a, table_b = None):
+def id_match(table_a, table_b = None, __first__ = True):
     schema = get_schema()
+    
     results = schema[schema['column_name'].str.contains(table_a + 'id' , case = False)][['table_name', 'column_name']]
     results['name'] = results['table_name'] + '.' + results['column_name']
     if table_b != None:
         results = results[results['table_name'].str.lower() == table_b.lower()]
+
+    if __first__ and (type(table_b) != type(None)) :
+        results_2 = id_match(table_b, table_a, False)
+        results = results.append(results_2)
+        
     return results
 
 def get_possible_table_joins( column_name ):
@@ -245,6 +247,9 @@ def print_header(table_name):
 
 def print_overlapping(table_1, table_2):
     'prints common column names between to tables'
+    table1 = complete_table_name(table_1)
+    table2 = complete_table_name(table_2)
+    
     cur = connect()
     cur.execute('select * from ' + table_1)
     one = []
@@ -296,6 +301,7 @@ def search_labels(word, tables = [] , exact = False):
 
 def print_data( table_name ,  column_name = '*', no = 50,):
     cur = connect()
+    table_name = complete_table_name(table_name)
     cur.execute('Select ' + column_name + ' from ' + table_name )
     for item in cur.fetchmany(no):
         print(item)
