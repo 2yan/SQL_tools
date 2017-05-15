@@ -31,7 +31,7 @@ def connect():
 
 
 def load_config( server = None, database = None):
-    'Filename will be depreciated at some point soon. Just use server and database. '
+    'loads values into __server and __database, use this function if using a pyodbc database '
     global __server
     global __database
     if (server != None) and (database != None):
