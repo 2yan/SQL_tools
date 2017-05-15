@@ -1,5 +1,5 @@
 # SQL_tools
-Useful tools for analysing a SQL database
+Useful tools for analysing a SQL database with Pandas
 
 
 
@@ -12,9 +12,9 @@ Install this library ( `pip install https://github.com/2yan/SQL_tools` )
 you need to write up some sort of connection function:
 
 
-`def connect_func():
+	def connect_func():
 
-	return sql_driver.connect('user', pass', 'database', 'table')`
+		return sql_driver.connect('user', pass', 'database', 'table')
 
 then pass that function to ryan_sql with 
 `set_connection(connect_func)`
