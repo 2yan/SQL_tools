@@ -54,6 +54,8 @@ def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
     
     return SQL
 def complete_table_name(phrase):
+    if '[' in phrase:
+        return phrase
     'Allows for incomplete table names to be typed in other parts of the code IF they are unique'
     search_phrase = '[' + phrase.lower() + ']'
     try:
@@ -111,7 +113,7 @@ def find_column_that_contains(table_name, find_me, exact = True):
             where = table_name + '.' +  column + '=' + find_me 
 
             try:
-                sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where 
+                sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where
                 data = pd.read_sql( sql, get_connection() )
                 if len(data) > 0:
                     result.append(column)
