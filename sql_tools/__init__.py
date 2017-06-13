@@ -271,11 +271,12 @@ def print_overlapping(table_1, table_2):
 
 def examine_column( column, tables):
     'Returns value counts in column name'
+    total = {}
     for table in tables:
         if column.lower() in get_columns(table):
             x = get_data(table, [column])
-            return x[column].value_counts()
-
+            total[table] = x[column].value_counts()
+    return total
 
 
 def search_database(word):
