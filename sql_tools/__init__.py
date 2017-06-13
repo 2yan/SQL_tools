@@ -269,7 +269,14 @@ def print_overlapping(table_1, table_2):
     
     cur.connection.close()
 
-    
+def examine_column( column, tables):
+    'Returns value counts in column name'
+    for table in tables:
+        if column.lower() in get_columns(table):
+            x = get_data(table, [column])
+            return x[column].value_counts()
+
+
 
 def search_database(word):
     'searches the whole database for tables'
