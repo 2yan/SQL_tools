@@ -2,6 +2,7 @@ import pypyodbc
 from datetime import datetime, timedelta
 from ryan_tools import * 
 import pandas as pd
+import pickle
 
 username = None
 password = None
@@ -319,3 +320,27 @@ def print_data( table_name ,  column_name = '*', no = 50,):
     
 
 
+def add_relationship( start, end, start_id, end_id):
+    start = start.lower()
+    end = end.lower()
+    start_id = start_id.lower()
+    end_id = end_id.lower()
+    try: 
+        relationships = pickle.load(open('relationships.dataframe', 'rb'))
+        relationships.loc[len(relationships), ['start', 'end', 'start_id', 'end_id']] = [start, end, start_id, end_id]
+        pickle.dump(relationships, open('relationships.dataframe', 'wb'))
+    except FileNotFoundError:
+        relationships = pd.DataFrame(columns = ['start', 'end', 'start_id', 'end_id'])
+        relationships.loc[0, ['start', 'end', 'start_id', 'end_id']] = [start, end, start_id, end_id]
+        pickle.dump(relationships, open('relationships.dataframe', 'wb'))
+    return 
+    
+def get_relationships(start = None, end = None):
+    data = pickle.load(open('relationships.dataframe', 'rb'))
+    if start != None:
+        data = data[data['start'] == start.lower()]
+    if end != None:
+        data = data[data['end'] == end.lower()]       
+    return data
+    
+    
