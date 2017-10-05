@@ -81,19 +81,33 @@ def get_schema():
     return schema
 
 
+
 def id_match(table_a, table_b = None, __first__ = True):
     schema = get_schema()
     
-    results = schema[schema['column_name'].str.contains(table_a + 'id' , case = False)][['table_name', 'column_name']]
-    results['name'] = results['table_name'] + '.' + results['column_name']
-    if table_b != None:
-        results = results[results['table_name'].str.lower() == table_b.lower()]
+    to_find_a = table_a + 'id'
+    result = schema[schema['column_name'].str.lower() == to_find_a.lower()][['table_name', 'column_name']]
+    result['start_id'] = table_a + '.' + 'id'
+    result['end_id'] = result['table_name'] + '.' + result['column_name']
+    result['start'] = table_a
+    result['end'] = result['table_name']
+    if type(table_b) != type(None):
+        result = result[result['table_name'].str.lower() ==table_b]
+        result = result[['start_id', 'end_id', 'start', 'end']]
+        result_end = table_b
+        if __first__ == True:
+            result_2 = id_match(table_b, table_a, False)
+            result = result.append(result_2)
+            
+    result = result[['start_id', 'end_id', 'start', 'end']]
+    return result
+    
 
-    if __first__ and (type(table_b) != type(None)) :
-        results_2 = id_match(table_b, table_a, False)
-        results = results.append(results_2)
-        
-    return results
+
+    
+    
+    
+    
 
 def get_possible_table_joins( column_name ):
     ' prints all overlapping column name in the two tables'
@@ -318,7 +332,6 @@ def print_data( table_name ,  column_name = '*', no = 50,):
         print(item)
     cur.connection.close()
     
-
 
 def add_relationship( start, end, start_id, end_id):
     start = start.lower()
