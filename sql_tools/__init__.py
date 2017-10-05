@@ -355,5 +355,18 @@ def get_relationships(start = None, end = None):
     if end != None:
         data = data[data['end'] == end.lower()]       
     return data
-    
+
+def run_sql(sql):
+    tries = 0
+    while True:
+        try:
+            return pd.read_sql(sql, get_connection())
+        except pypyodbc.DatabaseError as e:
+            tries = tries + 1
+            print(tries)
+            if tries > 10:
+                raise e
+            pass
+            
+        
     
