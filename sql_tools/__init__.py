@@ -356,7 +356,7 @@ def get_relationships(start = None, end = None):
         data = data[data['end'] == end.lower()]       
     return data
 
-def run_sql(sql):
+def read_sql(sql):
     tries = 0
     while True:
         try:
