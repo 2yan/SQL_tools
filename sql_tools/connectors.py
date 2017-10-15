@@ -6,7 +6,7 @@ def get_postgresql():
         raise e
     
     func = psycopg2.connect
-    func.name = 'postgresq'
+    func.name = 'postgresql'
     return func
 
 def get_microsoft_sql():
