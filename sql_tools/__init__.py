@@ -1,30 +1,44 @@
-import pypyodbc
-from datetime import datetime, timedelta
-from ryan_tools import * 
+import ryan_tools as rt
 import pandas as pd
 import pickle
 
-username = None
-password = None
-database_ip = None
 
-#These Values have to be set, you can use load_config to do so. 
-__server = None
-__database = None
-
-
+method = None
+arguments = None
+keyword_arguments = None
 
     
+    
+def set_connection_method(connection_function,*args,  **kwargs):
+    global method
+    global arguments
+    global keyword_arguments
+    method = connection_function
+    arguments = args
+    keyword_arguments = kwargs
+        
+    
 def get_connection():
-    '''Theoretically this can be overwritten to use any sql library
-    returns a connection Object often used by pandas.read_sql()
-    Nice and convenient. '''
-    if __server == None or __database == None:
-        raise Exception(' PLEASE SET SERVER AND DATABSE VALUES FIRST USING LOAD_CONFIG' )
-    con = pypyodbc.connect(driver = 'SQL Server',server = __server , database = __database)
+    ''' Used to get a connection object'''
+    
+    if type(method) == type(None):
+        message = '''
+        PASS THE <your_sql_driver_name>.connect function to set_connection_method()
+        along with the arguments such as database, username etc. 
+        You can use the sql_tools.connectors file to get connecton functions
+        to do that:
+            from sql_tools import connectors
+            func = connectors.get_<databasename>
+        '''
+       
+        raise ValueError(message)
+    global method
+    global arguments
+    global keyword_arguments
+    con = method(*arguments, **keyword_arguments)
     return con
 
-def connect():
+def get_cursor():
     '''returns a cursor. It should probably be called get_cursor()
      relies on the get_connection() function. '''
     con = get_connection()
@@ -60,8 +74,8 @@ def complete_table_name(phrase):
     'Allows for incomplete table names to be typed in other parts of the code IF they are unique'
     search_phrase = '[' + phrase.lower() + ']'
     try:
-        cur = connect()
-        x = cur.execute('SELECT * FROM ' + search_phrase)
+        cur = get_cursor()
+        cur.execute('SELECT * FROM ' + search_phrase)
         cur.close()
         return search_phrase
     except Exception as e:
@@ -83,6 +97,7 @@ def get_schema():
 
 
 def id_match(table_a, table_b = None, __first__ = True):
+    ''' Check this'''
     schema = get_schema()
     
     to_find_a = table_a + 'id'
@@ -91,21 +106,18 @@ def id_match(table_a, table_b = None, __first__ = True):
     result['end_id'] = result['table_name'] + '.' + result['column_name']
     result['start'] = table_a
     result['end'] = result['table_name']
+    
     if type(table_b) != type(None):
         result = result[result['table_name'].str.lower() ==table_b]
         result = result[['start_id', 'end_id', 'start', 'end']]
-        result_end = table_b
+        #result_end = table_b
+        
         if __first__ == True:
             result_2 = id_match(table_b, table_a, False)
             result = result.append(result_2)
             
     result = result[['start_id', 'end_id', 'start', 'end']]
-    return result
-    
-
-
-    
-    
+    return result   
     
     
 
@@ -117,7 +129,7 @@ def get_possible_table_joins( column_name ):
 
 def find_column_that_contains(table_name, find_me, exact = True):
     'searches for a column that contains a keyword or string. Warning: you need to add the % flags yourself. '
-    cur = connect()
+    cur = get_cursor()
     table_name = complete_table_name( table_name)
     columns = get_columns(table_name)
     result = []
@@ -153,7 +165,7 @@ def find_column_that_contains(table_name, find_me, exact = True):
 def get_columns(table):
     'Returns the columns within a table'
     table = complete_table_name(table)
-    cur = connect()
+    cur = get_cursor()
     cur.execute('select * from ' + table)
     columns = []
     for item in cur.description:
@@ -164,6 +176,7 @@ def get_columns(table):
 def check_categorical(table, in_data = None, max_categories = 30):
     '''This needs seaborn installed to work, it's  function to explore and create graphs of categories within the chosen table.
      you can give in_data to make the computation faster, (IF you've allready pulled the data)'''
+    import seaborn as sea
     data = in_data
     table = complete_table_name(table)
     columns = get_columns(table)
@@ -210,10 +223,10 @@ def get_data(table, columns = ['*'], where = '' , number = None ):
     columns = ' , '.join(columns)
     SQL = 'SELECT ' + columns + ' FROM ' + table + gen_where(where)
                     
-    cur = connect()
+    cur = get_cursor()
     try:
         cur.execute(SQL )
-    except pypyodbc.ProgrammingError as e:
+    except Exception as e:
 
         print( 'SQL: ' + SQL )
         raise(e)
@@ -253,11 +266,11 @@ def get_all_tables():
 def print_header(table_name):
     'prints the header in a nice readable fashion. Use get_columns() to get a return value'
     table_name = complete_table_name(table_name)
-    cur = connect()
+    cur = get_cursor()
     cur.execute('select * from ' + table_name)
     
     for item in cur.description:
-        print(s_s(item[0], 50), item[1])
+        print(rt.s_s(item[0], 50), item[1])
         
     cur.connection.close()
 
@@ -267,7 +280,7 @@ def print_overlapping(table_1, table_2):
     table1 = complete_table_name(table_1)
     table2 = complete_table_name(table_2)
     
-    cur = connect()
+    cur = get_cursor()
     cur.execute('select * from ' + table_1)
     one = []
     for item in cur.description:
@@ -296,7 +309,7 @@ def examine_column( column, tables):
 
 def search_database(word):
     'searches the whole database for tables'
-    cur = connect()
+    cur = get_cursor()
     cur.execute('SELECT * FROM sys.Tables')
     names = []
     results = []
@@ -325,7 +338,7 @@ def search_labels(word, tables = [] , exact = False):
         
 
 def print_data( table_name ,  column_name = '*', no = 50,):
-    cur = connect()
+    cur = get_cursor()
     table_name = complete_table_name(table_name)
     cur.execute('Select ' + column_name + ' from ' + table_name )
     for item in cur.fetchmany(no):
@@ -359,14 +372,19 @@ def get_relationships(start = None, end = None):
 def read_sql(sql):
     tries = 0
     while True:
-        try:
+        global method
+        if method.name == 'postgresq':
+            import pypyodbc
+            try:
+                return pd.read_sql(sql, get_connection())
+            except pypyodbc.DatabaseError as e:
+                tries = tries + 1
+                print(tries)
+                if tries > 10:
+                    raise e
+                pass
+        else:
             return pd.read_sql(sql, get_connection())
-        except pypyodbc.DatabaseError as e:
-            tries = tries + 1
-            print(tries)
-            if tries > 10:
-                raise e
-            pass
-            
+                
         
     
