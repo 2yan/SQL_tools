@@ -2,7 +2,7 @@ import ryan_tools as rt
 import pandas as pd
 import pickle
 
-class Ice_pick():
+class IcePick():
     method = None
     arguments = None
     keyword_arguments = None
