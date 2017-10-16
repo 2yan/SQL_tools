@@ -7,8 +7,8 @@ method = None
 arguments = None
 keyword_arguments = None
 
-    
-    
+
+
 def set_connection_method(connection_function,*args,  **kwargs):
     global method
     global arguments
@@ -16,23 +16,23 @@ def set_connection_method(connection_function,*args,  **kwargs):
     method = connection_function
     arguments = args
     keyword_arguments = kwargs
-        
-    
+
+
 def get_connection():
     ''' Used to get a connection object'''
-    
+    global method
     if type(method) == type(None):
         message = '''
         PASS THE <your_sql_driver_name>.connect function to set_connection_method()
-        along with the arguments such as database, username etc. 
+        along with the arguments such as database, username etc.
         You can use the sql_tools.connectors file to get connecton functions
         to do that:
             from sql_tools import connectors
             func = connectors.get_<databasename>
         '''
-       
+
         raise ValueError(message)
-    global method
+
     global arguments
     global keyword_arguments
     con = method(*arguments, **keyword_arguments)
@@ -53,20 +53,20 @@ def load_config( server = None, database = None):
         __server = server
         __database = database
     get_schema()
-    
+
 def construct_sql(column_dict = None, join_dict = None , where_dict = None ):
     'This is a work in progress'
     SQL = ''
 
     if column_dict != None:
         SQL = SQL + ' SELECT '
-        cols = [] 
-        for key in column_dict.keys(): 
+        cols = []
+        for key in column_dict.keys():
             for column in column_dict[key]:
                 cols.append(key+ '.' + column)
         SQL = SQL +' '+  ','.join( cols)
-        
-    
+
+
     return SQL
 def complete_table_name(phrase):
     if '[' in phrase:
@@ -85,7 +85,7 @@ def complete_table_name(phrase):
         possible = search_database(phrase)
         if len(possible)== 1:
             return '[' + possible[0] + ']'
-    if len(possible) > 1:            
+    if len(possible) > 1:
         raise Warning('NO Single Match found for name. POssible Names =' +' , '.join(possible))
     return search_phrase
 
@@ -99,27 +99,27 @@ def get_schema():
 def id_match(table_a, table_b = None, __first__ = True):
     ''' Check this'''
     schema = get_schema()
-    
+
     to_find_a = table_a + 'id'
     result = schema[schema['column_name'].str.lower() == to_find_a.lower()][['table_name', 'column_name']]
     result['start_id'] = table_a + '.' + 'id'
     result['end_id'] = result['table_name'] + '.' + result['column_name']
     result['start'] = table_a
     result['end'] = result['table_name']
-    
+
     if type(table_b) != type(None):
         result = result[result['table_name'].str.lower() ==table_b]
         result = result[['start_id', 'end_id', 'start', 'end']]
         #result_end = table_b
-        
+
         if __first__ == True:
             result_2 = id_match(table_b, table_a, False)
             result = result.append(result_2)
-            
+
     result = result[['start_id', 'end_id', 'start', 'end']]
-    return result   
-    
-    
+    return result
+
+
 
 def get_possible_table_joins( column_name ):
     ' prints all overlapping column name in the two tables'
@@ -137,7 +137,7 @@ def find_column_that_contains(table_name, find_me, exact = True):
         if type(find_me) == str:
             find_me ='\'' + find_me + '\''
         for column in columns:
-            where = table_name + '.' +  column + '=' + find_me 
+            where = table_name + '.' +  column + '=' + find_me
 
             try:
                 sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where
@@ -192,21 +192,21 @@ def check_categorical(table, in_data = None, max_categories = 30):
             sea.countplot(x = column, data = data )
             sea.plt.show()
             print('_________________________________\n\n')
-            
+
 def get_dictonary( listo_items ):
     'might be the same as dict(zip())?'
 
     diction = {}
     for item in listo_items:
         diction [ str(item[0]) ] = item[1]
-        
+
     return diction
 
 def gen_where(where ):
     SQL = ''
     if type(where) == str:
         return where
-    
+
     if where != {}:
         for key in where.keys():
             if 'WHERE' not in SQL:
@@ -215,14 +215,14 @@ def gen_where(where ):
             else:
                 WHERE = ' AND ' + key + ' = ' + '\'' + where[key] + '\''
                 SQL = SQL + WHERE
-    return SQL 
-    
+    return SQL
+
 def get_data(table, columns = ['*'], where = '' , number = None ):
     ' Same as SELECT COLUMNS FROM TABLE, the where argument can be a dictionary with columns as keys and == values, or can just be a where statement'
     table = complete_table_name(table)
     columns = ' , '.join(columns)
     SQL = 'SELECT ' + columns + ' FROM ' + table + gen_where(where)
-                    
+
     cur = get_cursor()
     try:
         cur.execute(SQL )
@@ -230,7 +230,7 @@ def get_data(table, columns = ['*'], where = '' , number = None ):
 
         print( 'SQL: ' + SQL )
         raise(e)
-        
+
     columns = []
     for item in cur.description:
         columns.append(item[0])
@@ -255,7 +255,7 @@ def temp_list_str(name, item_list, cast_item = str):
 
     other_commands = ','.join(item_list)
     return first_command + other_commands + ') v(' + name + ')'
-    
+
 
 def get_all_tables():
     'returns a list of every table in the database'
@@ -268,10 +268,10 @@ def print_header(table_name):
     table_name = complete_table_name(table_name)
     cur = get_cursor()
     cur.execute('select * from ' + table_name)
-    
+
     for item in cur.description:
         print(rt.s_s(item[0], 50), item[1])
-        
+
     cur.connection.close()
 
 
@@ -279,14 +279,14 @@ def print_overlapping(table_1, table_2):
     'prints common column names between to tables'
     table1 = complete_table_name(table_1)
     table2 = complete_table_name(table_2)
-    
+
     cur = get_cursor()
     cur.execute('select * from ' + table_1)
     one = []
     for item in cur.description:
         one.append(item)
     cur.execute('select * from ' + table_2)
-    
+
     two = []
     for item in cur.description:
         two.append(item)
@@ -294,7 +294,7 @@ def print_overlapping(table_1, table_2):
         for item2 in two:
             if item[0] == item2[0]:
                 print( item )
-    
+
     cur.connection.close()
 
 def examine_column( column, tables):
@@ -320,14 +320,14 @@ def search_database(word):
             results.append(name[0])
     cur.connection.close()
     return results
-        
+
 def search_labels(word, tables = [] , exact = False):
     'searches for columns within the whole database of tables, specify tables argument to only look in tables containing a certian word.'
-    
+
     schema = get_schema()
     data = schema[schema['column_name'].str.contains(word, case = False )]
     if exact:
-        data = data[data['column_name'].str.lower() == word.lower() ] 
+        data = data[data['column_name'].str.lower() == word.lower() ]
     final = pd.DataFrame()
     final['table_name'] = data['table_name']
     final['column_name'] = data['column_name']
@@ -335,7 +335,7 @@ def search_labels(word, tables = [] , exact = False):
     if len(tables) > 0:
         final = final[final['table_name'].str.contains('|'.join(tables), case = False)]
     return final
-        
+
 
 def print_data( table_name ,  column_name = '*', no = 50,):
     cur = get_cursor()
@@ -344,14 +344,14 @@ def print_data( table_name ,  column_name = '*', no = 50,):
     for item in cur.fetchmany(no):
         print(item)
     cur.connection.close()
-    
+
 
 def add_relationship( start, end, start_id, end_id):
     start = start.lower()
     end = end.lower()
     start_id = start_id.lower()
     end_id = end_id.lower()
-    try: 
+    try:
         relationships = pickle.load(open('relationships.dataframe', 'rb'))
         relationships.loc[len(relationships), ['start', 'end', 'start_id', 'end_id']] = [start, end, start_id, end_id]
         pickle.dump(relationships, open('relationships.dataframe', 'wb'))
@@ -359,14 +359,14 @@ def add_relationship( start, end, start_id, end_id):
         relationships = pd.DataFrame(columns = ['start', 'end', 'start_id', 'end_id'])
         relationships.loc[0, ['start', 'end', 'start_id', 'end_id']] = [start, end, start_id, end_id]
         pickle.dump(relationships, open('relationships.dataframe', 'wb'))
-    return 
-    
+    return
+
 def get_relationships(start = None, end = None):
     data = pickle.load(open('relationships.dataframe', 'rb'))
     if start != None:
         data = data[data['start'] == start.lower()]
     if end != None:
-        data = data[data['end'] == end.lower()]       
+        data = data[data['end'] == end.lower()]
     return data
 
 def read_sql(sql):
@@ -385,6 +385,6 @@ def read_sql(sql):
                 pass
         else:
             return pd.read_sql(sql, get_connection())
-                
-        
-    
+
+
+
