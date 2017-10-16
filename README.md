@@ -15,8 +15,6 @@ Autocomplete table names ( If the name is unique enough )
 
 
 
-
-
 ## Simple How to :
 ### Dependancies:
 
@@ -41,12 +39,12 @@ pip3 install .
 
 
 ## Loading up and taking off 
-import sql_tools as st
+import sql_tools
 
 ### THE QUICK EXAMPLE: 
 MIRCROSFT SQL SERVER
 
->st.set_connection_method(pypyodbc.connect, driver = 'SQL Server', server = 'ServerName', database = 'DatabaseName')
+> ip = sql_tools.IcePick(pypyodbc.connect, driver = 'SQL Server', server = 'ServerName', database = 'DatabaseName')
 
 ### The Longer explanation.
 
@@ -57,8 +55,9 @@ and Pypyodbc for Microsoft SQL Server.
 
 Your connection function is just driverlibrary.connect
 with 'driverlibrary' being whatever python library you're using to connect. 
-
-You just pass that to set_connection_method( driverlibrary.connect, arguments )
+ 
+You just pass that to the IcePickconstructor to get your IcePick object
+sql_tools.IcePick( driverlibrary.connect, arguments )
 Arguments are positional arguments followed by keyword arguments. 
 (Arguments refering to the arguments that the connection function takes. i.e (my_username, my_password,my_database, server = 'servername') 
 
@@ -95,8 +94,8 @@ gen_where(where_dict)
 
 and more!
 
-More complete examples with descriptions coming in at some point, for now you can explore the library by calling help( sql_tools )
-and help( sql_tools.function ) where function is the function name you want help for; the majority of them have explanations. 
+More complete examples with descriptions coming in at some point, for now you can explore the library by calling help( IcePick)
+and help( IcePick.function ) where function is the function name you want help for; the majority of them have explanations. 
 
 Final Note:
 you probably want to ensure you have some understanding of pandas dataframes as this library relies heavily on them. 
