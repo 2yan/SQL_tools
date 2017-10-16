@@ -48,7 +48,7 @@ MIRCROSFT SQL SERVER
 
 >st.set_connection_method(pypyodbc.connect, driver = 'SQL Server', server = 'ServerName', database = 'DatabaseName')
 
-### THE Longer explanation.
+### The Longer explanation.
 
 
 Once you've gotten to this bit you need to import the appropriate database connection driver
