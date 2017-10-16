@@ -48,7 +48,7 @@ MIRCROSFT SQL SERVER
 
 >st.set_connection_method(pypyodbc.connect, driver = 'SQL Server', server = 'ServerName', database = 'DatabaseName')
 
-
+### THE Longer explanation.
 
 
 Once you've gotten to this bit you need to import the appropriate database connection driver
@@ -58,20 +58,16 @@ and Pypyodbc for Microsoft SQL Server.
 Your connection function is just driverlibrary.connect
 with 'driverlibrary' being whatever python library you're using to connect. 
 
-then you just pass that to set_connection_method( driverlibrary.connect, arguments )
+You just pass that to set_connection_method( driverlibrary.connect, arguments )
 Arguments are positional arguments followed by keyword arguments. 
 (Arguments refering to the arguments that the connection function takes. i.e (my_username, my_password,my_database, server = 'servername') 
-
 
 once that's done, you're ready to go. 
 
 
-
-## HOW DOES THIS WORK?
-
+## More explanation?
 Basically you have some sort of library that handles connecting to the <whatever_flavor> SQL database, this set of tools requires you to already have that connecting with python to the datbase bit figured out, all you need to do is provide a connection to the database and ensure the Schema pulling works. The get_schema() function might have to be overwritten but is confirmed to be working with
 postgresql and Microsoft sql server.
-
 
 the get_schema() function has to return a dataframe with two columns: table_name, and column_name
 
@@ -79,6 +75,7 @@ the get_schema() function has to return a dataframe with two columns: table_name
 
 after that you have a very powerful library for doing things in a sql database:
 samples: 
+find_column_that_contains(table_name, word_to_find)
 
 id_match(table_a, table_b)
 
@@ -94,7 +91,7 @@ get_all_tables()
 
 gen_where(where_dict)
 
-find_column_that_contains(table_name, word_to_find)
+
 
 and more!
 
