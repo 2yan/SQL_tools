@@ -35,7 +35,7 @@ Google is your friend, you need to know what what sql server you are connecting 
 
 ### HOW TO INSTALL  
 sql_tools  
-https://github.com/2yan/SQL_tools.git  
+https://github.com/2yan/sql_tools.git  
 cd sql_tools  
 pip3 install .  
 
