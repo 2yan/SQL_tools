@@ -11,8 +11,9 @@ class IcePick():
         self.method = connection_function
         self.arguments = args
         self.keyword_arguments = kwargs
+
     def get_connection(self):
-        con = method(*self.arguments, **self.keyword_arguments)
+        con = self.method(*self.arguments, **self.keyword_arguments)
         return con
 
     def get_cursor(self):
@@ -341,8 +342,7 @@ class IcePick():
     def read_sql(self, sql):
         tries = 0
         while True:
-            global method
-            if method.name == 'postgresq':
+            if self.method.name == 'postgresq':
                 import pypyodbc
                 try:
                     return pd.read_sql(sql, self.get_connection())
