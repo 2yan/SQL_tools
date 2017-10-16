@@ -1,7 +1,4 @@
 # SQL_tools
-
-
-
 Useful tools for analysing a SQL database with Pandas
 If you're a data analyst or doing anything with a sql_database then this library is for you. 
 
@@ -42,14 +39,6 @@ pip3 install .
 
 ## Loading up and taking off 
 import sql_tools as st
-
-### THE QUICK EXAMPLE: 
-MIRCROSFT SQL SERVER
-
->st.set_connection_method(pypyodbc.connect, driver = 'SQL Server', server = 'Horkos', database = 'Salesforce Backups')
-
-
-
 
 Once you've gotten to this bit you need to import the appropriate database connection driver
 I like to use psycopg2 for a postgresql server 
