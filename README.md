@@ -46,7 +46,7 @@ import sql_tools as st
 ### THE QUICK EXAMPLE: 
 MIRCROSFT SQL SERVER
 
->st.set_connection_method(pypyodbc.connect, driver = 'SQL Server', server = 'Horkos', database = 'Salesforce Backups')
+>st.set_connection_method(pypyodbc.connect, driver = 'SQL Server', server = 'ServerName', database = 'DatabaseName')
 
 
 
