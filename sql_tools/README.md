@@ -19,22 +19,22 @@ Autocomplete table names ( If the name is unique enough )
 
 #### ryan_tools:
 
-git clone https://github.com/2yan/ryan_tools.git
-cd ryan_tools
-pip3 install .
+git clone https://github.com/2yan/ryan_tools.git  
+cd ryan_tools  
+pip3 install .  
 
 
-#### pandas
+#### pandas  
 pip3 install pandas
 
-#### python library to connect to database
+#### python library to connect to database  
 Google is your friend, you need to know what what sql server you are connecting to first. 
 
-### HOW TO INSTALL
-sql_tools
-https://github.com/2yan/SQL_tools.git
-cd sql_tools
-pip3 install .
+### HOW TO INSTALL  
+sql_tools  
+https://github.com/2yan/SQL_tools.git  
+cd sql_tools  
+pip3 install .  
 
 
 ## Loading up and taking off 
