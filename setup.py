@@ -8,5 +8,5 @@ setup(name='sql_tools',
       author_email='2yan@outlook.com',
       license='MIT',
       packages=['sql_tools'],
-      install_requires= ['pandas', 'ryan_tools', 'pickle'],
+      install_requires= ['pandas', 'ryan_tools'],
       zip_safe=False)
