@@ -44,7 +44,7 @@ import sql_tools
 ### THE QUICK EXAMPLE: 
 MIRCROSFT SQL SERVER
 
-> ip = sql_tools.IcePick(pypyodbc.connect, driver = 'SQL Server', server = 'ServerName', database = 'DatabaseName')
+> ip = sql_tools.IcePick(pypyodbc, driver = 'SQL Server', server = 'ServerName', database = 'DatabaseName')
 
 ### The Longer explanation.
 
@@ -53,11 +53,9 @@ Once you've gotten to this bit you need to import the appropriate database conne
 I like to use psycopg2 for a postgresql server 
 and Pypyodbc for Microsoft SQL Server.
 
-Your connection function is just driverlibrary.connect
-with 'driverlibrary' being whatever python library you're using to connect. 
  
 You just pass that to the IcePickconstructor to get your IcePick object
-sql_tools.IcePick( driverlibrary.connect, arguments )
+sql_tools.IcePick( driverlibrary, arguments )
 Arguments are positional arguments followed by keyword arguments. 
 (Arguments refering to the arguments that the connection function takes. i.e (my_username, my_password,my_database, server = 'servername') 
 
@@ -68,7 +66,9 @@ once that's done, you're ready to go.
 Basically you have some sort of library that handles connecting to the <whatever_flavor> SQL database, this set of tools requires you to already have that connecting with python to the datbase bit figured out, all you need to do is provide a connection to the database and ensure the Schema pulling works. The get_schema() function might have to be overwritten but is confirmed to be working with
 postgresql and Microsoft sql server.
 
-the get_schema() function has to return a dataframe with two columns: table_name, and column_name
+- the get_schema() function has to return a dataframe with two columns: table_name, and column_name, so if your database has a 
+weird way of getting the schema then you just set sql_tools.get_schema = your_own_function_to_get_schema_information 
+and everything should work. 
 
 
 

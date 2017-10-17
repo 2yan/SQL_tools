@@ -3,12 +3,14 @@ import pandas as pd
 import pickle
 
 class IcePick():
+    library = None
     method = None
     arguments = None
     keyword_arguments = None
 
-    def __init__(self, connection_function,*args,  **kwargs):
-        self.method = connection_function
+    def __init__(self, library ,*args,  **kwargs):
+        self.library = library
+        self.method = library.connect
         self.arguments = args
         self.keyword_arguments = kwargs
 
@@ -344,7 +346,7 @@ class IcePick():
         while True:
                 try:
                     return pd.read_sql(sql, self.get_connection())
-                except pypyodbc.DatabaseError as e:
+                except self.library.DatabaseError as e:
                     tries = tries + 1
                     print(tries)
                     if tries > 10:
