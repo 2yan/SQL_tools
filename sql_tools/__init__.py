@@ -342,8 +342,6 @@ class IcePick():
     def read_sql(self, sql):
         tries = 0
         while True:
-            if self.method.name == 'postgresq':
-                import pypyodbc
                 try:
                     return pd.read_sql(sql, self.get_connection())
                 except pypyodbc.DatabaseError as e:
@@ -352,8 +350,6 @@ class IcePick():
                     if tries > 10:
                         raise e
                     pass
-            else:
-                return pd.read_sql(sql, self.get_connection())
 
 
 
