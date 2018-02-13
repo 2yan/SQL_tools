@@ -97,43 +97,35 @@ class IcePick():
         return pd.DataFrame(results['table_name'].unique(), columns = ['table_name'])
 
     def find_column_that_contains(self, table_name, find_me, exact = True):
-        'searches for a column that contains a keyword or string. Warning: you need to add the % flags yourself. '
-        cur = self.get_cursor()
-        table_name = self.complete_table_name( table_name)
-        columns = self.get_columns(table_name)
+        'searches for a column that contains a keyword or string. You can use % if you want to make non exact searches more specific.'
         result = []
-        if exact:
-            if type(find_me) == str:
-                find_me ='\'' + find_me + '\''
-            for column in columns:
-                where = table_name + '.' +  column + '=' + find_me
+        columns = self.get_columns(table_name)
 
-                try:
-                    sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where
-                    data = pd.read_sql( sql, self.get_connection() )
-                    if len(data) > 0:
-                        result.append(column)
-                except pd.io.sql.DatabaseError:
-                    pass
-        if not exact:
-            if type(find_me) == str:
-                find_me ='\'' + find_me.lower() + '\''
-            for column in columns:
-                where = 'lower(' + table_name + '.' +  column +') ' +  ' like ' + find_me
-                try:
-                    sql = 'SELECT ' + column + ' From ' + table_name + ' WHERE '+ where
-                    cur.execute(sql)
-                    data = cur.fetchone()
-                    if data != None:
-                        result.append(column)
-                except:
-                    pass
+        for column in columns:
+            print(column)
+            sql = 'SELECT TOP 1 [{}] FROM [{}] where [{}]'.format(column,table_name, column)
+            
+            if exact:
+                sql = sql + " = '{}'".format(find_me) 
+
+            if not exact:
+                if '%' not in find_me:
+                    find_me = '%{}%'.format(find_me)
+                sql = sql + " like '{}'".format(find_me)
+            try:
+                check = self.read_sql(sql, allowed_failures= 0)
+            except Exception:
+                check = []
+                pass
+            if len(check) == 1:
+                result.append(column)
         return result
 
 
     def get_columns(self, table):
         'Returns the columns within a table'
         table = self.complete_table_name(table)
+        
         cur = self.get_cursor()
         cur.execute('select * from ' + table)
         columns = []
@@ -141,7 +133,17 @@ class IcePick():
             columns.append(item[0].lower())
         return columns
 
-
+    def describe_table(self, table):
+        'Returns the columns within a table'
+        table = self.complete_table_name(table)
+        
+        cur = self.get_cursor()
+        cur.execute('select * from ' + table)
+        description = pd.DataFrame(cur.description)
+        return description
+    
+    
+    
     def check_categorical(self, table, in_data = None, max_categories = 30):
         '''This needs seaborn installed to work, it's  function to explore and create graphs of categories within the chosen table.
          you can give in_data to make the computation faster, (IF you've allready pulled the data)'''
@@ -341,17 +343,14 @@ class IcePick():
             data = data[data['end'] == end.lower()]
         return data
 
-    def read_sql(self, sql):
+    def read_sql(self, sql, allowed_failures = 10):
+
         tries = 0
         while True:
                 try:
                     return pd.read_sql(sql, self.get_connection())
                 except self.library.DatabaseError as e:
                     tries = tries + 1
-                    print(tries)
-                    if tries > 10:
+                    if tries > allowed_failures:
                         raise e
                     pass
-
-
-
