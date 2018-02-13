@@ -102,7 +102,6 @@ class IcePick():
         columns = self.get_columns(table_name)
 
         for column in columns:
-            print(column)
             sql = 'SELECT TOP 1 [{}] FROM [{}] where [{}]'.format(column,table_name, column)
             
             if exact:
@@ -350,6 +349,7 @@ class IcePick():
                 try:
                     return pd.read_sql(sql, self.get_connection())
                 except self.library.DatabaseError as e:
+                    print(sql)
                     tries = tries + 1
                     if tries > allowed_failures:
                         raise e
