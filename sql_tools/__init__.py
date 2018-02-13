@@ -96,7 +96,7 @@ class IcePick():
         results = schema[schema['column_name'].str.contains(column_name, case = False )]
         return pd.DataFrame(results['table_name'].unique(), columns = ['table_name'])
 
-    def find_column_that_contains(self, table_name, find_me, exact = True):
+    def find_column_that_contains(self, table_name, find_me, exact = True, where = False):
         'searches for a column that contains a keyword or string. You can use % if you want to make non exact searches more specific.'
         result = []
         columns = self.get_columns(table_name)
@@ -111,6 +111,8 @@ class IcePick():
                 if '%' not in find_me:
                     find_me = '%{}%'.format(find_me)
                 sql = sql + " like '{}'".format(find_me)
+            if where != False:
+                sql = sql + self.gen_where(where)
             try:
                 check = self.read_sql(sql, allowed_failures= 0)
             except Exception:
@@ -175,6 +177,8 @@ class IcePick():
     def gen_where(self, where ):
         SQL = ''
         if type(where) == str:
+            if 'where' not in where.lower():
+                where = ' WHERE ' + where 
             return where
 
         if where != {}:
