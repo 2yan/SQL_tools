@@ -349,7 +349,6 @@ class IcePick():
                 try:
                     return pd.read_sql(sql, self.get_connection())
                 except self.library.DatabaseError as e:
-                    print(sql)
                     tries = tries + 1
                     if tries > allowed_failures:
                         raise e
