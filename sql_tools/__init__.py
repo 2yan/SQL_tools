@@ -105,6 +105,7 @@ class IcePick():
             sql = 'SELECT TOP 1 [{}] FROM [{}] where [{}]'.format(column,table_name, column)
             
             if exact:
+                
                 sql = sql + " = '{}'".format(find_me) 
 
             if not exact:
@@ -112,7 +113,7 @@ class IcePick():
                     find_me = '%{}%'.format(find_me)
                 sql = sql + " like '{}'".format(find_me)
             if where != False:
-                sql = sql + self.gen_where(where)
+                sql = sql + where
             try:
                 check = self.read_sql(sql, allowed_failures= 0)
             except Exception:
@@ -177,7 +178,10 @@ class IcePick():
     def gen_where(self, where ):
         SQL = ''
         if type(where) == str:
-            if 'where' not in where.lower():
+            chars = []
+            for letter in where:
+                chars.append(letter.isalpha())
+            if 'where' not in where.lower() and any(chars):
                 where = ' WHERE ' + where 
             return where
 
