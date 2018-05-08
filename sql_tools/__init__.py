@@ -1,6 +1,13 @@
-import ryan_tools as rt
+
 import pandas as pd
 import pickle
+
+
+
+def s_s( number, spaces = 8 ):
+    'For prettier printing, I almost never use this, you probably never need to'
+    return ( str(number).ljust(spaces) )
+
 
 class IcePick():
     library = None
@@ -248,7 +255,7 @@ class IcePick():
         cur.execute('select * from ' + table_name)
 
         for item in cur.description:
-            print(rt.s_s(item[0], 50), item[1])
+            print(s_s(item[0], 50), item[1])
 
         cur.connection.close()
 
