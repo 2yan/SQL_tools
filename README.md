@@ -16,26 +16,15 @@ Autocomplete table names ( If the name is unique enough )
 
 
 ## Simple How to :
-### Dependancies:
-
-#### ryan_tools:
-
-git clone https://github.com/2yan/ryan_tools.git  
-cd ryan_tools  
-pip3 install .  
-
-
-#### pandas  
-pip3 install pandas
 
 #### python library to connect to database  
 Google is your friend, you need to know what what sql server you are connecting to first. 
 
 ### HOW TO INSTALL  
-sql_tools  
-https://github.com/2yan/sql_tools.git  
+
+git clone https://github.com/2yan/sql_tools.git  
 cd sql_tools  
-pip3 install .  
+pip install .  
 
 
 ## Loading up and taking off 
