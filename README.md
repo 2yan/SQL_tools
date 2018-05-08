@@ -21,10 +21,8 @@ Autocomplete table names ( If the name is unique enough )
 Google is your friend, you need to know what what sql server you are connecting to first. 
 
 ### HOW TO INSTALL  
+pip install git+https://github.com/2yan/sql_tools.git   
 
-git clone https://github.com/2yan/sql_tools.git  
-cd sql_tools  
-pip install .  
 
 
 ## Loading up and taking off 
